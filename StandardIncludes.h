@@ -1,7 +1,10 @@
 #ifndef STANDARD_INCLUDES_H
 #define STANDARD_INCLUDES_H
 
+// standard includes
 #include <vector>
+#include <string>
+#include <fstream>
 
 #ifdef _WIN32
 #include <Windows.h>
