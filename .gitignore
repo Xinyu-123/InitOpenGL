@@ -33,5 +33,4 @@
 # Visual Studio
 ipch/
 Debug/
-Browse.VC.db
-.vs/
+Browse.*
