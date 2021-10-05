@@ -152,7 +152,7 @@ copy /Y "$(SolutionDir)\External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Singleton.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="ToolWindow.cpp" />
     <ClCompile Include="WindowController.cpp" />
   </ItemGroup>

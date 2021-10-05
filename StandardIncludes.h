@@ -1,10 +1,15 @@
 #ifndef STANDARD_INCLUDES_H
 #define STANDARD_INCLUDES_H
 
+#define GLM_ENABLE_EXPERIMENTAL
+
+
 // standard includes
 #include <vector>
 #include <string>
 #include <fstream>
+#include <iostream>
+
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -15,6 +20,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #include "Singleton.h"
 

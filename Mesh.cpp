@@ -14,9 +14,15 @@ Mesh:: ~Mesh() {
 void Mesh::Create(Shader* _shader){
 	m_shader = _shader;
 	m_vertexData = {
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f
+		/* Position */			/* RGBA Color */
+		0.2f, 0.2f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,
+		0.3f, 0.9f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f,
+		0.4f, 0.5f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
+		0.7f, 0.8f, 0.0f,		1.0f, 0.0f, 0.0f, 0.0f,
+		0.8f, 0.4f, 0.0f,		1.0f, 1.0f, 0.0f, 1.0f,
+		1.0f, 0.6f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
+		1.0f, 0.2f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,
+		1.5f, 0.6f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f
 	};
 
 	glGenBuffers(1, &m_vertexBuffer);
@@ -31,6 +37,8 @@ void Mesh::Cleanup(){
 
 void Mesh::Render(){
 	glUseProgram(m_shader->GetProgramID());
+
+	// 1st attribute : vertices
 	glEnableVertexAttribArray(m_shader->GetAttrVertices());
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
 	glVertexAttribPointer(
@@ -38,9 +46,21 @@ void Mesh::Render(){
 		3,
 		GL_FLOAT,
 		GL_FALSE,
-		12,
+		7 * sizeof(float),
 		(void*)0
 	);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	// 2nd attribute : colors
+	glEnableVertexAttribArray(m_shader->GetAttrColors());
+	glVertexAttribPointer(
+		m_shader->GetAttrColors(),
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		7 * sizeof(float),
+		(void*)(3 * sizeof(float))
+	);
+
+	glDrawArrays(GL_TRIANGLES, 0, m_vertexData.size() * 0.14285714285f);
 	glDisableVertexAttribArray(m_shader->GetAttrVertices());
 }

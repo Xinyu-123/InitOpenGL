@@ -1,9 +1,9 @@
-#version 120
+#version 330
 
-uniform int RenderRedChannel;
-uniform int RenderGreenChannel;
-uniform int RenderBlueChannel;
+in vec4 retColor;
+out vec4 FragColor;
 
-void main(){
-	gl_FragColor = vec4(RenderRedChannel, RenderGreenChannel, RenderBlueChannel, 0.0f);
+void main()
+{
+	FragColor = retColor;
 }
