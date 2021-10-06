@@ -1,6 +1,9 @@
 #ifndef STANDARD_INCLUDES_H
 #define STANDARD_INCLUDES_H
 
+#define GLM_ENABLE_EXPERIMENTAL
+
+
 // standard includes
 #include <vector>
 #include <string>

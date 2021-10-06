@@ -1,8 +1,15 @@
-#version 120
+#version 330
 
 in vec3 vertices;
 uniform mat4 WVP;
+in vec4 colors;
 
+out vec4 retColor;
+
+void main()
+{
+	gl_Position = vec4(vertices, 1.0f);
+	retColor = colors;
 void main()
 {
 	gl_Position = WVP * vec4(vertices, 1.0);
