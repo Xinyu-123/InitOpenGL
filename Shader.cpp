@@ -4,6 +4,7 @@ Shader::Shader()
 {
 	m_programID = 0;
 	m_attrVertices = 0;
+	m_attrWVP = {};
 	m_result = GL_FALSE;
 	m_infoLength = 0;
 }
@@ -68,6 +69,7 @@ GLuint Shader::LoadShaderFile(const char* _filePath, GLenum _type)
 void Shader::LoadAttributes()
 {
 	m_attrVertices = glGetAttribLocation(m_programID, "vertices");
+	m_attrWVP = glGetUniformLocation(m_programID, "WVP");
 }
 
 void Shader::EvaluateShader(int _infoLength, GLuint _id)

@@ -21,6 +21,7 @@ public:
 
 	// Methods
 	void NewWindow();
+	Resolution GetResolution();
 private:
 	// Members
 	GLFWwindow* m_window;

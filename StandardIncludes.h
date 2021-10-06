@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <iostream>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -15,7 +16,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
+#include "Resolution.h"
 #include "Singleton.h"
 
 using namespace std;

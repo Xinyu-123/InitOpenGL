@@ -20,6 +20,7 @@ public:
 	// Methods
 	void LoadShaders(const char* _vertexFilePath, const char* _fragmentFilePath);
 	void Cleanup();
+	GLuint GetAttrWVP() { return m_attrWVP; }
 private:
 	// Methods
 	void CreateShaderProgram(const char* _vertexFilePath, const char* _fragmentFilePath);
@@ -30,6 +31,7 @@ private:
 	// Members
 	GLuint m_programID;
 	GLuint m_attrVertices;
+	GLuint m_attrWVP;
 	GLint m_result = GL_FALSE;
 	int m_infoLength;
 };
