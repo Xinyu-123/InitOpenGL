@@ -11,9 +11,9 @@ Camera::Camera(Resolution _screenResolution)
 	m_projection = glm::perspective(glm::radians(45.0f),
 		(float)_screenResolution.m_width / (float)_screenResolution.m_height,
 		0.1f,
-		100.0f);
+		1000.0f);
 
-	m_view = glm::lookAt(glm::vec3(4, 3, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	m_view = glm::lookAt(glm::vec3(2, 2, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 }
 
 Camera::~Camera()

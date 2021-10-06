@@ -19,7 +19,7 @@ void Mesh::Create(Shader* _shader){
 		0.2f, 0.2f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,
 		0.3f, 0.9f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f,
 		0.4f, 0.5f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
-		0.7f, 0.8f, 0.0f,		1.0f, 0.0f, 0.0f, 0.0f,
+		0.7f, 0.8f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,
 		0.8f, 0.4f, 0.0f,		1.0f, 1.0f, 0.0f, 1.0f,
 		1.0f, 0.6f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
 		1.0f, 0.2f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,
@@ -50,6 +50,20 @@ void Mesh::Render(glm::mat4 _wvp){
 		7 * sizeof(float),
 		(void*)0
 	);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	// 2nd attribute : colors
+	glEnableVertexAttribArray(m_shader->GetAttrColors());
+	glVertexAttribPointer(
+		m_shader->GetAttrColors(),
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		7 * sizeof(float),
+		(void*)(3 * sizeof(float))
+	);
+
+	_wvp *= m_world;
+	glUniformMatrix4fv(m_shader->GetAttrWVP(), 1, GL_FALSE, &_wvp[0][0]);
+	glDrawArrays(GL_TRIANGLES, 0, m_vertexData.size() * 0.14285714285f);
 	glDisableVertexAttribArray(m_shader->GetAttrVertices());
 }
