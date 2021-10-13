@@ -10,7 +10,6 @@
 #include <fstream>
 #include <iostream>
 
-
 #ifdef _WIN32
 #include <Windows.h>
 #define M_ASSERT(_cond, _msg) \
@@ -21,7 +20,9 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
+#include "Resolution.h"
 #include "Singleton.h"
 
 using namespace std;
