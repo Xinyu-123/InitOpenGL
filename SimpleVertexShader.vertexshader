@@ -11,7 +11,5 @@ out vec2 retTexCoord;
 
 void main()
 {
-	gl_Position = WVP * vec4(vertices, 1.0);
-	retColor = vec4(colors);
-	retTexCoord = texCoords;
-}
+	gl_Position = gl_Position = WVP * vec4(vertices, 1.0);
+	retColor = colors;
