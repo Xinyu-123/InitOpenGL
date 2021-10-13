@@ -20,7 +20,7 @@ void Mesh::Create(Shader* _shader){
 	m_shader = _shader;
 
 	m_texture = Texture();
-	m_texture.LoadTexture("D:/School 2021-22/Graphics and Animations/InitOpenGL/Assets/Textures/Wood.jpg");
+	m_texture.LoadTexture("C:/Users/dongxiny/Desktop/Graphics and Animation/InitOpenGL/Assets/Textures/Wood.jpg");
 
 	// Colors values take from
 	// https://web.archive.org/web/20180301041827/https://prideout.net/archive/colors.php
