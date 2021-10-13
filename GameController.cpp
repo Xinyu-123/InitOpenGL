@@ -18,7 +18,6 @@ void GameController::Initalize()
 	M_ASSERT((glewInit() == GLEW_OK), "Failed to initalize GLEW");
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glEnable(GL_CULL_FACE);
 
 	m_camera = Camera(WindowController::GetInstance().GetResolution());
 }
@@ -32,7 +31,6 @@ void GameController::RunGame()
 	m_shader.LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 	m_mesh = Mesh();
 	m_mesh.Create(&m_shader);
-
 
 	GLFWwindow* win = WindowController::GetInstance().GetWindow();
 	do {

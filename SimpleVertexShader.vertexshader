@@ -1,17 +1,13 @@
 #version 330
 
-layout(location=0) in vec3 vertices;
-layout(location=1) in vec3 colors;
-layout(location=2) in vec2 texCoords;
-
+in vec3 vertices;
 uniform mat4 WVP;
+in vec4 colors;
 
 out vec4 retColor;
-out vec2 retTexCoord;
 
 void main()
 {
 	gl_Position = WVP * vec4(vertices, 1.0);
-	retColor = vec4(colors);
-	retTexCoord = texCoords;
+	retColor = colors;
 }

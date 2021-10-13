@@ -2,7 +2,6 @@
 #define MESH_H
 
 #include "StandardIncludes.h"
-#include "Texture.h"
 
 class Shader;
 
@@ -20,14 +19,9 @@ public:
 
 private:
 	Shader* m_shader;
-	Texture m_texture;
-	GLuint m_vertexBuffer; // GPU Buffer
-	GLuint m_indexBuffer; // GPU Buffer
+	GLuint m_vertexBuffer;
 	vector<GLfloat> m_vertexData;
-	vector<GLubyte> m_indexData;
 	glm::mat4 m_world;
-	glm::vec3 m_position;
-	glm::vec3 m_rotation;
 };
 
 
