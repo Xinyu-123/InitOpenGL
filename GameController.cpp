@@ -25,8 +25,8 @@ void GameController::Initalize()
 
 void GameController::RunGame()
 {
-	//InitOpenGL::ToolWindow^ window = gcnew InitOpenGL::ToolWindow();
-	//window->Show();
+	InitOpenGL::ToolWindow^ window = gcnew InitOpenGL::ToolWindow();
+	window->Show();
 	//System::Windows::Forms::Application::Run(window);
 	m_shader = Shader();
 	m_shader.LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");

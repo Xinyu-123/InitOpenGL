@@ -60,6 +60,15 @@ void Mesh::Create(Shader* _shader){
 		50.0f, -50.0f, 0.0f,	0.0f, 1.0f, 0.0f,		1.0f, 0.0f, // bottom-right
 		-50.0f, -50.0f, 0.0f,	0.0f, 0.0f, 1.0f,		0.0f, 0.0f, // bottom-left
 		-50.0f, 50.0f, 0.0f,	1.0f, 1.0f, 1.0f,		0.0f, 1.0f // top-left
+		/* Position */			/* RGBA Color */
+		0.2f, 0.2f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,
+		0.3f, 0.9f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f,
+		0.4f, 0.5f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
+		0.7f, 0.8f, 0.0f,		1.0f, 0.0f, 0.0f, 0.0f,
+		0.8f, 0.4f, 0.0f,		1.0f, 1.0f, 0.0f, 1.0f,
+		1.0f, 0.6f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
+		1.0f, 0.2f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,
+		1.5f, 0.6f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f
 	};
 
 	m_indexData = {
@@ -96,34 +105,16 @@ void Mesh::Render(glm::mat4 _wvp){
 	glEnableVertexAttribArray(m_shader->GetAttrColors());
 	glVertexAttribPointer(
 		m_shader->GetAttrColors(),
-		4,
+		3,
 		GL_FLOAT,
 		GL_FALSE,
-		8 * sizeof(float),
+		7 * sizeof(float),
 		(void*)(3 * sizeof(float))
 	);
 
-	// 3rd attribute : texCoords
-	glEnableVertexAttribArray(m_shader->GetAttrTexCoords());
-	glVertexAttribPointer(
-		m_shader->GetAttrTexCoords(),
-		2,
-		GL_FLOAT,
-		GL_FALSE,
-		8 * sizeof(float),
-		(void*)(6 * sizeof(float))
-	);
-
-	//m_world = glm::rotate(m_world, 0.001f, { 0, 1, 0 });
-	m_rotation.y += 0.005f;
-	glm::mat4 transform = glm::rotate(_wvp, m_rotation.y, glm::vec3(0, 1, 0));
-	//_wvp *= m_world;
-	glUniformMatrix4fv(m_shader->GetAttrWVP(), 1, GL_FALSE, &transform[0][0]);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
-	glBindTexture(GL_TEXTURE_2D, m_texture.GetTexture());
-	glDrawElements(GL_TRIANGLES, m_indexData.size(), GL_UNSIGNED_BYTE, (void*)0);
-	glDisableVertexAttribArray(m_shader->GetAttrColors());
+	_wvp *= m_world;
+	glUniformMatrix4fv(m_shader->GetAttrWVP(), 1, GL_FALSE, &_wvp[0][0]);
+	glDrawArrays(GL_TRIANGLES, 0, m_vertexData.size() * 0.14285714285f);
 	glDisableVertexAttribArray(m_shader->GetAttrVertices());
 	glDisableVertexAttribArray(m_shader->GetAttrTexCoords());
 }
