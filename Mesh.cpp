@@ -62,6 +62,10 @@ void Mesh::Create(Shader* _shader){
 		-50.0f, 50.0f, 0.0f,	1.0f, 1.0f, 1.0f,		0.0f, 1.0f // top-left
 	};
 
+	glGenBuffers(1, &m_vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, m_vertexData.size() * sizeof(float), m_vertexData.data(), GL_STATIC_DRAW);
+
 	m_indexData = {
 		2, 0, 3, 
 		2, 1, 0
