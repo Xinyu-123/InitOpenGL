@@ -89,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\External\glew-2.1.0\include;$(SolutionDir)\External\glm;$(SolutionDir)\External\glfw-3.3.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\External\glew-2.1.0\include;$(SolutionDir)\External\glm;$(SolutionDir)\External\glfw-3.3.4\include;$(SolutionDir)\External\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,6 +154,7 @@ copy /Y "$(SolutionDir)\External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ToolWindow.cpp" />
     <ClCompile Include="WindowController.cpp" />
   </ItemGroup>
@@ -165,6 +166,7 @@ copy /Y "$(SolutionDir)\External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="StandardIncludes.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="ToolWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
