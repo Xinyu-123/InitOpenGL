@@ -13,7 +13,7 @@ Camera::Camera(Resolution _screenResolution)
 		0.1f,
 		1000.0f);
 
-	m_view = glm::lookAt(glm::vec3(2, 2, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	m_view = glm::lookAt(glm::vec3(100, 100, 100), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 }
 
 Camera::~Camera()
