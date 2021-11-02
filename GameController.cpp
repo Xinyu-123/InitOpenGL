@@ -18,8 +18,8 @@ void GameController::Initalize()
 	M_ASSERT((glewInit() == GLEW_OK), "Failed to initalize GLEW");
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glEnable(GL_CULL_FACE);
-
+	//glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 	m_camera = Camera(WindowController::GetInstance().GetResolution());
 }
 
@@ -29,7 +29,7 @@ void GameController::RunGame()
 	//window->Show();
 	//System::Windows::Forms::Application::Run(window);
 	m_shader = Shader();
-	m_shader.LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+	m_shader.LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
 	m_mesh = Mesh();
 	m_mesh.Create(&m_shader);
 
@@ -47,7 +47,7 @@ void GameController::RunGame()
 		//loc = glGetUniformLocation(m_shader.GetProgramID(), "RenderBlueChannel");
 		//glUniform1i(loc, (int)InitOpenGL::ToolWindow::RenderBlueChannel);
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		m_mesh.Render(m_camera.GetProjection() * m_camera.GetView());
 		glfwSwapBuffers(win);
 		glfwPollEvents();

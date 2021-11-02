@@ -23,7 +23,7 @@ private:
 	int m_height;
 	int m_channels;
 	GLuint m_texture;
-
+	GLuint m_texture2;
 };
 
 #endif
