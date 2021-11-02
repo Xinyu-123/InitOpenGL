@@ -92,6 +92,9 @@ void Mesh::Render(glm::mat4 _wvp){
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
 
+	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
+
 	// 1st attribute : vertices
 	glEnableVertexAttribArray(m_shader->GetAttrVertices());
 	glVertexAttribPointer(
@@ -131,7 +134,10 @@ void Mesh::Render(glm::mat4 _wvp){
 	//_wvp *= m_world;
 	glUniformMatrix4fv(m_shader->GetAttrWVP(), 1, GL_FALSE, &transform[0][0]);
 
+<<<<<<< Updated upstream
 	glActiveTexture(GL_TEXTURE0);
+=======
+>>>>>>> Stashed changes
 	glBindTexture(GL_TEXTURE_2D, m_texture.GetTexture());
 	glUniform1i(m_shader->GetSampler1(), 0);
 	
