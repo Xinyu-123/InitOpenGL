@@ -3,9 +3,11 @@
 #include "ToolWindow.h"
 GameController::GameController()
 {
-	m_shader = {};
+	m_shaderColor = {};
+	m_shaderDiffuse = {};
 	m_camera = {};
-	m_mesh = {};
+	m_meshBox = {};
+	m_meshLight = {};
 }
 
 GameController::~GameController()
@@ -28,11 +30,21 @@ void GameController::RunGame()
 	//InitOpenGL::ToolWindow^ window = gcnew InitOpenGL::ToolWindow();
 	//window->Show();
 	//System::Windows::Forms::Application::Run(window);
-	m_shader = Shader();
-	m_shader.LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
-	m_mesh = Mesh();
-	m_mesh.Create(&m_shader);
+	m_shaderColor = Shader();
+	m_shaderColor.LoadShaders("Color.vertexshader", "Color.fragmentshader");
+	m_shaderDiffuse = Shader();
+	m_shaderDiffuse.LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
+	
+	m_meshLight = Mesh();
+	m_meshLight.Create(&m_shaderColor);
+	m_meshLight.SetPosition({ 1.0f, 0.5f, 0.5f });
+	m_meshLight.SetScale({ 0.1f, 0.1f, 0.1f });
 
+	m_meshBox = Mesh();
+	m_meshBox.Create(&m_shaderDiffuse);
+	m_meshBox.SetLightColor({ 0.5f, 0.9f, 0.5f });
+	m_meshBox.SetLightPosition(m_meshLight.GetPosition());
+	m_meshBox.SetCameraPosition(m_camera.GetPosition());
 
 	GLFWwindow* win = WindowController::GetInstance().GetWindow();
 	do {
@@ -48,12 +60,15 @@ void GameController::RunGame()
 		//glUniform1i(loc, (int)InitOpenGL::ToolWindow::RenderBlueChannel);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		m_mesh.Render(m_camera.GetProjection() * m_camera.GetView());
+		m_meshBox.Render(m_camera.GetProjection() * m_camera.GetView());
+		m_meshLight.Render(m_camera.GetProjection() * m_camera.GetView());
 		glfwSwapBuffers(win);
 		glfwPollEvents();
 	} while (glfwGetKey(win, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		glfwWindowShouldClose(win) == 0);
 
-	m_mesh.Cleanup();
-	m_shader.Cleanup();
+	m_meshLight.Cleanup();
+	m_meshBox.Cleanup();
+	m_shaderColor.Cleanup();
+	m_shaderDiffuse.Cleanup();
 }

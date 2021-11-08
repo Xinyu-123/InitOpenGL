@@ -13,10 +13,23 @@ public:
 	Mesh();
 	virtual ~Mesh();
 
+	// Accessors
+	glm::vec3& GetPosition() { return m_position; }
+	void SetScale(glm::vec3 _scale) { m_scale = _scale; }
+	void SetPosition(glm::vec3 _position) { m_position = _position; }
+	void SetLightPosition(glm::vec3 _lightPosition) { m_lightPosition = _lightPosition; }
+	void SetLightColor(glm::vec3 _lightColor) { m_lightColor = _lightColor; }
+	void SetCameraPosition(glm::vec3 _cameraPosition) { m_cameraPosition = _cameraPosition; }
 	// Methods
 	void Create(Shader* _shader);
 	void Cleanup();
-	void Render(glm::mat4 _wvp);
+	void Render(glm::mat4 _vp);
+	void CalculateTransform();
+	
+private:
+	// Methods
+	void SetShaderVariables(glm::mat4 _pv);
+	void BindAttributes();
 
 private:
 	Shader* m_shader;
@@ -26,9 +39,18 @@ private:
 	GLuint m_indexBuffer; // GPU Buffer
 	vector<GLfloat> m_vertexData;
 	vector<GLubyte> m_indexData;
-	glm::mat4 m_world;
+
+	// Transform
 	glm::vec3 m_position;
 	glm::vec3 m_rotation;
+	glm::vec3 m_scale;
+	glm::mat4 m_world;
+
+	// Lights
+	glm::vec3 m_lightPosition;
+	glm::vec3 m_lightColor;
+
+	glm::vec3 m_cameraPosition;
 };
 
 

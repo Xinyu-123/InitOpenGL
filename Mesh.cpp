@@ -10,6 +10,11 @@ Mesh::Mesh() {
 	m_world = glm::mat4(1.0f);
 	m_position = { 0, 0, 0 };
 	m_rotation = { 0, 0, 0 };
+	m_scale = { 1, 1, 1 };
+	m_world = glm::mat4();
+	m_lightPosition = { 0, 0, 0 };
+	m_lightColor = { 1, 1, 1 };
+	m_cameraPosition = { 0, 0, 0 };
 }
 
 Mesh:: ~Mesh() {
@@ -83,12 +88,49 @@ void Mesh::Cleanup(){
 	m_texture2.Cleanup();
 }
 
-void Mesh::Render(glm::mat4 _wvp){
+void Mesh::Render(glm::mat4 _vp){
 	glUseProgram(m_shader->GetProgramID());
+
+	m_rotation.y += 0.001f;
+
+	CalculateTransform();
+	SetShaderVariables(_vp);
+	BindAttributes();
+
+
+	//glDrawElements(GL_TRIANGLES, m_indexData.size(), GL_UNSIGNED_BYTE, (void*)0);
+	glDrawArrays(GL_TRIANGLES, 0, m_vertexData.size());
+	glDisableVertexAttribArray(m_shader->GetAttrNormals());
+	glDisableVertexAttribArray(m_shader->GetAttrVertices());
+	glDisableVertexAttribArray(m_shader->GetAttrTexCoords());
+}
+
+void Mesh::CalculateTransform()
+{
+	m_world = glm::translate(glm::mat4(1.0f), m_position);
+	m_world = glm::rotate(m_world, m_rotation.y, glm::vec3(0, 1, 0));
+	m_world = glm::scale(m_world, m_scale);
+}
+
+void Mesh::SetShaderVariables(glm::mat4 _pv)
+{
+	m_shader->SetMat4("World", m_world);
 	m_shader->SetVec3("DiffuseColor", { 1.0f, 1.0f, 1.0f });
 	m_shader->SetVec3("AmbientLight", { 0.1f, 0.1f, 0.1f });
-	m_shader->SetVec3("LightDirection", { 1.0f, 0.5f, 0.0f });
-	m_shader->SetVec3("LightColor", { 0.5f, 0.9f, 0.5f });
+	
+	m_shader->SetFloat("SpecularStrength", 4);
+	m_shader->SetVec3("SpecularColor", { 3.0f, 0.0f, 0.0f });
+	
+	
+	m_shader->SetVec3("LightPosition", m_lightPosition);
+	m_shader->SetVec3("LightColor", m_lightColor);
+	m_shader->SetMat4("WVP", _pv * m_world);
+	m_shader->SetVec3("CameraPosition", m_cameraPosition);
+
+}
+
+void Mesh::BindAttributes()
+{
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
 
@@ -125,24 +167,12 @@ void Mesh::Render(glm::mat4 _wvp){
 		(void*)(6 * sizeof(float))
 	);
 
-	//m_world = glm::rotate(m_world, 0.001f, { 0, 1, 0 });
-	m_rotation.y += 0.005f;
-	glm::mat4 transform = glm::rotate(_wvp, m_rotation.y, glm::vec3(0, 1, 0));
-	//_wvp *= m_world;
-	glUniformMatrix4fv(m_shader->GetAttrWVP(), 1, GL_FALSE, &transform[0][0]);
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture.GetTexture());
 	glUniform1i(m_shader->GetSampler1(), 0);
-	
+
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_texture2.GetTexture());
 	glUniform1i(m_shader->GetSampler2(), 1);
 
-
-	//glDrawElements(GL_TRIANGLES, m_indexData.size(), GL_UNSIGNED_BYTE, (void*)0);
-	glDrawArrays(GL_TRIANGLES, 0, m_vertexData.size());
-	glDisableVertexAttribArray(m_shader->GetAttrNormals());
-	glDisableVertexAttribArray(m_shader->GetAttrVertices());
-	glDisableVertexAttribArray(m_shader->GetAttrTexCoords());
 }

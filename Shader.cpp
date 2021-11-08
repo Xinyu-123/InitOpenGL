@@ -29,12 +29,30 @@ void Shader::Cleanup()
 	glDeleteProgram(m_programID);
 }
 
+void Shader::SetFloat(const char* _name, float _value)
+{
+	GLint loc = glGetUniformLocation(m_programID, _name);
+	if (loc != -1)
+	{
+		glUniform1f(loc, _value);
+	}
+}
+
 void Shader::SetVec3(const char* _name, glm::vec3 _value)
 {
 	GLint loc = glGetUniformLocation(m_programID, _name);
 	if (loc != -1)
 	{
 		glUniform3fv(loc, 1, &_value[0]);
+	}
+}
+
+void Shader::SetMat4(const char* _name, glm::mat4 _value)
+{
+	GLint loc = glGetUniformLocation(m_programID, _name);
+	if (loc != -1)
+	{
+		glUniformMatrix4fv(loc, 1, GL_FALSE, &_value[0][0]);
 	}
 }
 
