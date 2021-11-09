@@ -8,6 +8,7 @@ GameController::GameController()
 	m_camera = {};
 	m_meshBox = {};
 	m_meshLight = {};
+	m_meshBoxes.clear();
 }
 
 GameController::~GameController()
@@ -22,7 +23,11 @@ void GameController::Initalize()
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+
+	srand(time(0));
+
 	m_camera = Camera(WindowController::GetInstance().GetResolution());
+
 }
 
 void GameController::RunGame()
@@ -37,14 +42,22 @@ void GameController::RunGame()
 	
 	m_meshLight = Mesh();
 	m_meshLight.Create(&m_shaderColor);
-	m_meshLight.SetPosition({ 1.0f, 0.5f, 0.5f });
+	m_meshLight.SetPosition({ 1.0f, -0.5f, 0.5f });
 	m_meshLight.SetScale({ 0.1f, 0.1f, 0.1f });
 
-	m_meshBox = Mesh();
-	m_meshBox.Create(&m_shaderDiffuse);
-	m_meshBox.SetLightColor({ 0.5f, 0.9f, 0.5f });
-	m_meshBox.SetLightPosition(m_meshLight.GetPosition());
-	m_meshBox.SetCameraPosition(m_camera.GetPosition());
+
+
+	for (int i = 0; i < 10; ++i)
+	{
+		Mesh box = Mesh();
+		box.Create(&m_shaderDiffuse);
+		box.SetLightColor({ 1.0f, 1.0f, 1.0f });
+		box.SetLightPosition(m_meshLight.GetPosition());
+		box.SetCameraPosition(m_camera.GetPosition());
+		box.SetScale({ 0.3f, 0.4f, 0.3f });
+		box.SetPosition({ glm::linearRand(-1.0f, 1.0f), glm::linearRand(-1.0f, 1.0f),glm::linearRand(-1.0f, 1.0f) });
+		m_meshBoxes.push_back(box);
+	}
 
 	GLFWwindow* win = WindowController::GetInstance().GetWindow();
 	do {
@@ -60,7 +73,11 @@ void GameController::RunGame()
 		//glUniform1i(loc, (int)InitOpenGL::ToolWindow::RenderBlueChannel);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		m_meshBox.Render(m_camera.GetProjection() * m_camera.GetView());
+		for (size_t i = 0; i < 10; ++i)
+		{
+			m_meshBoxes[i].Render(m_camera.GetProjection() * m_camera.GetView());
+		}
+		//m_meshBox.Render(m_camera.GetProjection() * m_camera.GetView());
 		m_meshLight.Render(m_camera.GetProjection() * m_camera.GetView());
 		glfwSwapBuffers(win);
 		glfwPollEvents();

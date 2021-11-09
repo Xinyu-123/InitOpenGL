@@ -7,8 +7,6 @@ Shader::Shader()
 	m_attrColors = 0;
 	m_attrNormals = 0;
 	m_attrTexCoords = 0;
-	m_sampler1 = 0;
-	m_sampler2 = 0;
 	m_attrWVP = {};
 	m_result = GL_FALSE;
 	m_infoLength = 0;
@@ -27,6 +25,17 @@ void Shader::LoadShaders(const char* _vertexFilePath, const char* _fragmentFileP
 void Shader::Cleanup()
 {
 	glDeleteProgram(m_programID);
+}
+
+void Shader::SetTextureSampler(const char* _name, GLuint _texUnit, GLuint _texUnitID, int _value)
+{
+	GLint loc = glGetUniformLocation(m_programID, _name);
+	if (loc != 1)
+	{
+		glActiveTexture(_texUnit);
+		glBindTexture(GL_TEXTURE_2D, _value);
+		glUniform1i(loc, _texUnitID);
+	}
 }
 
 void Shader::SetFloat(const char* _name, float _value)
@@ -105,8 +114,7 @@ void Shader::LoadAttributes()
 	m_attrNormals = glGetAttribLocation(m_programID, "normals");
 	m_attrTexCoords = glGetAttribLocation(m_programID, "texCoords");
 	m_attrWVP = glGetUniformLocation(m_programID, "WVP");
-	m_sampler1 = glGetUniformLocation(m_programID, "sampler1");
-	m_sampler2 = glGetUniformLocation(m_programID, "sampler2");
+
 }
 
 

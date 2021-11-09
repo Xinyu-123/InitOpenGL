@@ -26,9 +26,9 @@ void Mesh::Create(Shader* _shader){
 	m_shader = _shader;
 
 	m_texture = Texture();
-	m_texture.LoadTexture("Assets/Textures/Wood.jpg");
+	m_texture.LoadTexture("Assets/Textures/MetalFrameWood.jpg");
 	m_texture2 = Texture();
-	m_texture2.LoadTexture("Assets/Textures/Emoji.jpg");
+	m_texture2.LoadTexture("Assets/Textures/MetalFrame.jpg");
 
 	// Colors values take from
 	// https://web.archive.org/web/20180301041827/https://prideout.net/archive/colors.php
@@ -91,7 +91,7 @@ void Mesh::Cleanup(){
 void Mesh::Render(glm::mat4 _vp){
 	glUseProgram(m_shader->GetProgramID());
 
-	m_rotation.y += 0.001f;
+	m_rotation.y += 0.005f;
 
 	CalculateTransform();
 	SetShaderVariables(_vp);
@@ -115,24 +115,29 @@ void Mesh::CalculateTransform()
 void Mesh::SetShaderVariables(glm::mat4 _pv)
 {
 	m_shader->SetMat4("World", m_world);
-	m_shader->SetVec3("DiffuseColor", { 1.0f, 1.0f, 1.0f });
-	m_shader->SetVec3("AmbientLight", { 0.1f, 0.1f, 0.1f });
-	
-	m_shader->SetFloat("SpecularStrength", 4);
-	m_shader->SetVec3("SpecularColor", { 3.0f, 0.0f, 0.0f });
-	
-	
-	m_shader->SetVec3("LightPosition", m_lightPosition);
-	m_shader->SetVec3("LightColor", m_lightColor);
 	m_shader->SetMat4("WVP", _pv * m_world);
 	m_shader->SetVec3("CameraPosition", m_cameraPosition);
 
+
+
+	// Configure Light
+	m_shader->SetVec3("light.position", m_lightPosition);
+	m_shader->SetVec3("light.color", m_lightColor);
+	m_shader->SetVec3("light.ambientLight", { 0.1f, 0.1f, 0.1f });
+	m_shader->SetVec3("light.diffuseColor", { 1.0f, 1.0f, 1.0f });
+	m_shader->SetVec3("light.specularColor", { 3.0f, 3.0f, 3.0f });
+	
+
+	// Configure Material
+	m_shader->SetFloat("material.specularStrength", 4);
+	m_shader->SetTextureSampler("material.diffuseTexture", GL_TEXTURE0, 0, m_texture.GetTexture());
+	m_shader->SetTextureSampler("material.specularTexture", GL_TEXTURE1, 1, m_texture2.GetTexture());
 }
 
 void Mesh::BindAttributes()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
 
 	// 1st attribute : vertices
 	glEnableVertexAttribArray(m_shader->GetAttrVertices());
@@ -166,13 +171,5 @@ void Mesh::BindAttributes()
 		8 * sizeof(float),
 		(void*)(6 * sizeof(float))
 	);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_texture.GetTexture());
-	glUniform1i(m_shader->GetSampler1(), 0);
-
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_texture2.GetTexture());
-	glUniform1i(m_shader->GetSampler2(), 1);
 
 }

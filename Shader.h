@@ -15,12 +15,11 @@ public:
 	GLuint GetAttrColors() { return m_attrColors;  }
 	GLuint GetAttrNormals() { return m_attrNormals;  }
 	GLuint GetAttrTexCoords() { return m_attrTexCoords;  }
-	GLuint GetSampler1() { return m_sampler1;  }
-	GLuint GetSampler2() { return m_sampler2;  }
 
 	// Methods
 	void LoadShaders(const char* _vertexFilePath, const char* _fragmentFilePath);
 	void Cleanup();
+	void SetTextureSampler(const char* _name, GLuint _texUnit, GLuint _texUnitID, int _value);
 	GLuint GetAttrWVP() { return m_attrWVP; }
 	void SetFloat(const char* _name, float _value);
 	void SetVec3(const char* _name, glm::vec3 _value);
@@ -40,8 +39,6 @@ private:
 	GLuint m_attrColors;
 	GLuint m_attrNormals;
 	GLuint m_attrTexCoords;
-	GLuint m_sampler1;
-	GLuint m_sampler2;
 	GLint m_result = GL_FALSE;
 	int m_infoLength;
 };
