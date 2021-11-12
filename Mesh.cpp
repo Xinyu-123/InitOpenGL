@@ -1,6 +1,8 @@
 #include "Mesh.h"
 #include "Shader.h"
 
+vector<Mesh> Mesh::Lights;
+
 Mesh::Mesh() {
 	m_shader = nullptr;
 	m_texture = {};
@@ -91,7 +93,7 @@ void Mesh::Cleanup(){
 void Mesh::Render(glm::mat4 _vp){
 	glUseProgram(m_shader->GetProgramID());
 
-	m_rotation.y += 0.005f;
+	m_rotation.y += 0.001f;
 
 	CalculateTransform();
 	SetShaderVariables(_vp);
@@ -121,17 +123,28 @@ void Mesh::SetShaderVariables(glm::mat4 _pv)
 
 
 	// Configure Light
-	m_shader->SetVec3("light.position", m_lightPosition);
-	m_shader->SetVec3("light.color", m_lightColor);
-	m_shader->SetVec3("light.ambientLight", { 0.1f, 0.1f, 0.1f });
-	m_shader->SetVec3("light.diffuseColor", { 1.0f, 1.0f, 1.0f });
-	m_shader->SetVec3("light.specularColor", { 3.0f, 3.0f, 3.0f });
-	
+	for (size_t i = 0; i < Lights.size(); ++i)
+	{
+		m_shader->SetVec3(Concat("light[", i, "].position").c_str(), Lights[i].GetPosition());
+		m_shader->SetVec3(Concat("light[", i, "].color").c_str(), Lights[i].GetColor());
 
-	// Configure Material
-	m_shader->SetFloat("material.specularStrength", 4);
-	m_shader->SetTextureSampler("material.diffuseTexture", GL_TEXTURE0, 0, m_texture.GetTexture());
-	m_shader->SetTextureSampler("material.specularTexture", GL_TEXTURE1, 1, m_texture2.GetTexture());
+		m_shader->SetFloat(Concat("light[", i, "].constant").c_str(), 1.0f);
+		m_shader->SetFloat(Concat("light[", i, "].linear").c_str(), 0.09f);
+		m_shader->SetFloat(Concat("light[", i, "].quadradic").c_str(), 0.032f);
+		m_shader->SetVec3(Concat("light[", i, "].ambientLight").c_str(), { 0.3f, 0.3f, 0.3f });
+		m_shader->SetVec3(Concat("light[", i, "].diffuseColor").c_str(), { 1.0f, 1.0f, 1.0f });
+		m_shader->SetVec3(Concat("light[", i, "].specularColor").c_str(), { 3.0f, 3.0f, 3.0f });
+
+		m_shader->SetVec3(Concat("light[", i, "].direction").c_str(), glm::normalize(glm::vec3({ 0.0f + i * 0.1f, 0, 0.0f + i * 0.1f }) - Lights[i].GetPosition()));
+		m_shader->SetFloat(Concat("light[", i, "].coneAngle").c_str(), glm::radians(5.0f));
+		m_shader->SetFloat(Concat("light[", i, "].falloff").c_str(), 100);
+
+
+		// Configure Material
+		m_shader->SetFloat("material.specularStrength", 4);
+		m_shader->SetTextureSampler("material.diffuseTexture", GL_TEXTURE0, 0, m_texture.GetTexture());
+		m_shader->SetTextureSampler("material.specularTexture", GL_TEXTURE1, 1, m_texture2.GetTexture());
+	}
 }
 
 void Mesh::BindAttributes()
@@ -172,4 +185,10 @@ void Mesh::BindAttributes()
 		(void*)(6 * sizeof(float))
 	);
 
+}
+
+string Mesh::Concat(string _s1, int _index, string _s2)
+{
+	string index = to_string(_index);
+	return(_s1 + index + _s2);
 }
