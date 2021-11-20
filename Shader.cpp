@@ -30,7 +30,7 @@ void Shader::Cleanup()
 void Shader::SetTextureSampler(const char* _name, GLuint _texUnit, GLuint _texUnitID, int _value)
 {
 	GLint loc = glGetUniformLocation(m_programID, _name);
-	if (loc != 1)
+	if (loc != -1)
 	{
 		glActiveTexture(_texUnit);
 		glBindTexture(GL_TEXTURE_2D, _value);

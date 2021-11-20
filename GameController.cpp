@@ -1,10 +1,12 @@
 #include "GameController.h"
 #include "WindowController.h"
 #include "ToolWindow.h"
+#include "Fonts.h"
 GameController::GameController()
 {
 	m_shaderColor = {};
 	m_shaderDiffuse = {};
+	m_shaderFont = {};
 	m_camera = {};
 	/*m_meshBox = {};
 	m_meshLight = {};*/
@@ -22,6 +24,8 @@ void GameController::Initalize()
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 	//glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 
 	srand(time(0));
@@ -40,6 +44,8 @@ void GameController::RunGame()
 	m_shaderDiffuse = Shader();
 	m_shaderDiffuse.LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
 	
+	m_shaderFont = Shader();
+	m_shaderFont.LoadShaders("Font.vertexshader", "Font.fragmentshader");
 
 	Mesh m = Mesh();
 	m.Create(&m_shaderColor, "Assets/Models/teapot.obj");
@@ -54,6 +60,9 @@ void GameController::RunGame()
 	teapot.SetPosition({ 0.0f, 0.0f, 0.0f });
 	teapot.SetScale({ 0.02f, 0.02f, 0.02f });
 	m_meshBoxes.push_back(teapot);
+
+	Fonts f = Fonts();
+	f.Create(&m_shaderFont, "arial.ttf", 500);
 
 	GLFWwindow* win = WindowController::GetInstance().GetWindow();
 	do {
@@ -77,6 +86,7 @@ void GameController::RunGame()
 		{
 			Mesh::Lights[i].Render(m_camera.GetProjection() * m_camera.GetView());
 		}
+		f.RenderText("Testing text", 10, 500, 0.5f, { 1.0f, 1.0f, 0.0f });
 
 		//m_meshBox.Render(m_camera.GetProjection() * m_camera.GetView());
 		/*m_meshLight.Render(m_camera.GetProjection() * m_camera.GetView());*/

@@ -9,6 +9,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <map>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -21,6 +22,12 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+// Font includes
+#define generic GenericFromFreeTypeLibrary
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#undef generic
 
 #include "Resolution.h"
 #include "Singleton.h"
