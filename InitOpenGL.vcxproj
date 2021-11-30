@@ -94,7 +94,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\External\glew-2.1.0\lib;$(SolutionDir)\External\glfw-3.3.4\lib-vc2019;$(SolutionDir)\External\freetype-2.10.4\release static\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\External\glew-2.1.0\lib;$(SolutionDir)\External\glfw-3.3.4\lib-vc2019;$(SolutionDir)\External\freetype-2.10.4\release static\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32d.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>

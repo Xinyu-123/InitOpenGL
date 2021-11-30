@@ -38,6 +38,21 @@ void Mesh::Create(Shader* _shader, string _file){
 	for (size_t i = 0; i < loader.LoadedMeshes.size(); ++i)
 	{
 		objl::Mesh curMesh = loader.LoadedMeshes[i];
+		vector<objl::Vector3> tangents;
+		vector<objl::Vector3> bitangents;
+		vector<objl::Vertex> triangles;
+		objl::Vector3 tangent;
+		objl::Vector3 bitangent;
+		for (unsigned int j = 0; j < curMesh.Vertices.size(); j += 3)
+		{
+			triangles.clear();
+			triangles.push_back(curMesh.Vertices[j]);
+			triangles.push_back(curMesh.Vertices[j + 1]);
+			triangles.push_back(curMesh.Vertices[j + 2]);
+			CalculateTangents(triangles, tangent, bitangent);
+			tangents.push_back(tangent);
+			bitangents.push_back(bitangent);
+		}
 		for (size_t j = 0; j < curMesh.Vertices.size(); ++j)
 		{
 			m_vertexData.push_back(curMesh.Vertices[j].Position.X);
@@ -50,6 +65,18 @@ void Mesh::Create(Shader* _shader, string _file){
 
 			m_vertexData.push_back(curMesh.Vertices[j].TextureCoordinate.X);
 			m_vertexData.push_back(curMesh.Vertices[j].TextureCoordinate.Y);
+
+			if (loader.LoadedMaterials[0].map_bump != "")
+			{
+				int index = j / 3;
+				m_vertexData.push_back(tangents[index].X);
+				m_vertexData.push_back(tangents[index].Y);
+				m_vertexData.push_back(tangents[index].Z);
+				
+				m_vertexData.push_back(bitangents[index].X);
+				m_vertexData.push_back(bitangents[index].Y);
+				m_vertexData.push_back(bitangents[index].Z);
+			}
 		}
 	}
 
@@ -97,7 +124,7 @@ void Mesh::Cleanup(){
 void Mesh::Render(glm::mat4 _vp){
 	glUseProgram(m_shader->GetProgramID());
 
-	m_rotation.y += 0.001f;
+	m_rotation.x += 0.01f;
 
 	CalculateTransform();
 	SetShaderVariables(_vp);
@@ -105,7 +132,8 @@ void Mesh::Render(glm::mat4 _vp){
 
 
 	//glDrawElements(GL_TRIANGLES, m_indexData.size(), GL_UNSIGNED_BYTE, (void*)0);
-	glDrawArrays(GL_TRIANGLES, 0, m_vertexData.size());
+
+	glDrawArrays(GL_TRIANGLES, 0, m_vertexData.size() / elementSize);
 	glDisableVertexAttribArray(m_shader->GetAttrNormals());
 	glDisableVertexAttribArray(m_shader->GetAttrVertices());
 	glDisableVertexAttribArray(m_shader->GetAttrTexCoords());
@@ -114,7 +142,7 @@ void Mesh::Render(glm::mat4 _vp){
 void Mesh::CalculateTransform()
 {
 	m_world = glm::translate(glm::mat4(1.0f), m_position);
-	m_world = glm::rotate(m_world, m_rotation.y, glm::vec3(0, 1, 0));
+	m_world = glm::rotate(m_world, m_rotation.x, glm::vec3(1, 0, 0));
 	m_world = glm::scale(m_world, m_scale);
 }
 
@@ -168,6 +196,14 @@ void Mesh::BindAttributes()
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
 
+	int stride = 8;
+	elementSize = 8;
+	if (m_enableNormalMap)
+	{
+		stride += 6;
+		elementSize += 6;
+	}
+	
 	// 1st attribute : vertices
 	glEnableVertexAttribArray(m_shader->GetAttrVertices());
 	glVertexAttribPointer(
@@ -175,7 +211,7 @@ void Mesh::BindAttributes()
 		3,
 		GL_FLOAT,
 		GL_FALSE,
-		8 * sizeof(float),
+		stride * sizeof(float),
 		(void*)0
 	);
 
@@ -186,7 +222,7 @@ void Mesh::BindAttributes()
 		3,
 		GL_FLOAT,
 		GL_FALSE,
-		8 * sizeof(float),
+		stride * sizeof(float),
 		(void*)(3 * sizeof(float))
 	);
 
@@ -197,14 +233,58 @@ void Mesh::BindAttributes()
 		2,
 		GL_FLOAT,
 		GL_FALSE,
-		8 * sizeof(float),
+		stride * sizeof(float),
 		(void*)(6 * sizeof(float))
 	);
 
+	if (m_enableNormalMap)
+	{
+		// 4nd attribute : tangent
+		glEnableVertexAttribArray(m_shader->GetAttrTangents());
+		glVertexAttribPointer(
+			m_shader->GetAttrTangents(),
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			stride * sizeof(float),
+			(void*)(8 * sizeof(float))
+		);
+
+		// 5rd attribute : bitangent
+		glEnableVertexAttribArray(m_shader->GetAttrBitangents());
+		glVertexAttribPointer(
+			m_shader->GetAttrBitangents(),
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			stride * sizeof(float),
+			(void*)(11 * sizeof(float))
+		);
+
+	}
 }
 
 string Mesh::Concat(string _s1, int _index, string _s2)
 {
 	string index = to_string(_index);
 	return(_s1 + index + _s2);
+}
+
+void Mesh::CalculateTangents(vector<objl::Vertex> _vertices, objl::Vector3& _tangent, objl::Vector3& _bitangent)
+{
+	objl::Vector3 edge1 = _vertices[1].Position - _vertices[0].Position;
+	objl::Vector3 edge2 = _vertices[2].Position - _vertices[0].Position;
+
+	objl::Vector2 deltaUV1 = _vertices[1].TextureCoordinate - _vertices[0].TextureCoordinate;
+	objl::Vector2 deltaUV2 = _vertices[2].TextureCoordinate - _vertices[0].TextureCoordinate;
+
+	float f = 1.0f / (deltaUV1.X * deltaUV2.Y - deltaUV2.X * deltaUV1.Y);
+
+	_tangent.X = f * (deltaUV2.Y * edge1.X - deltaUV1.Y * edge2.X);
+	_tangent.Y = f * (deltaUV2.Y * edge1.Y - deltaUV1.Y * edge2.Y);
+	_tangent.Z = f * (deltaUV2.Y * edge1.Z - deltaUV1.Y * edge2.Z);	
+	
+	_bitangent.X = f * (-deltaUV2.Y * edge1.X + deltaUV1.X * edge2.X);
+	_bitangent.X = f * (-deltaUV2.Y * edge1.Y + deltaUV1.X * edge2.Y);
+	_bitangent.X = f * (-deltaUV2.Y * edge1.Z + deltaUV1.X * edge2.Z);
 }

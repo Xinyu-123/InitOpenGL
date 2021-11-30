@@ -3,6 +3,7 @@
 
 #include "StandardIncludes.h"
 #include "Texture.h"
+#include "OBJ_Loader.h"
 
 class Shader;
 
@@ -39,6 +40,8 @@ private:
 	void SetShaderVariables(glm::mat4 _pv);
 	void BindAttributes();
 	string Concat(string _s1, int _index, string _s2);
+	void CalculateTangents(vector<objl::Vertex> _vertices, objl::Vector3& _tangent, objl::Vector3& _bitangent);
+
 private:
 	Shader* m_shader;
 	Texture m_textureDiffuse;
@@ -49,6 +52,7 @@ private:
 	vector<GLfloat> m_vertexData;
 	vector<GLubyte> m_indexData;
 	bool m_enableNormalMap;
+	int elementSize;
 	// Transform
 	glm::vec3 m_position;
 	glm::vec3 m_scale;

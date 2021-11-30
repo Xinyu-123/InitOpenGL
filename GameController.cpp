@@ -56,31 +56,38 @@ void GameController::RunGame()
 #pragma region CreateMeshes
 	Mesh m = Mesh();
 	m.Create(&m_shaderColor, "Assets/Models/teapot.obj");
-	m.SetPosition({ 0.5f, 0.0f, 2.0f });
+	m.SetPosition({ 0.5f, 0.0f, 1.0f });
 	m.SetColor({ 1.0f, 1.0f, 1.0f });
 	m.SetScale({ 0.01f, 0.01f, 0.01f });
 	Mesh::Lights.push_back(m);
 	
-	Mesh teapot = Mesh();
-	teapot.Create(&m_shaderDiffuse, "Assets/Models/teapot.obj");
-	teapot.SetCameraPosition(m_camera.GetPosition());
-	teapot.SetPosition({ 0.0f, 0.0f, 1.0f });
-	teapot.SetScale({ 0.01f, 0.01f, 0.01f });
-	m_meshBoxes.push_back(teapot);
+	//Mesh teapot = Mesh();
+	//teapot.Create(&m_shaderDiffuse, "Assets/Models/teapot.obj");
+	//teapot.SetCameraPosition(m_camera.GetPosition());
+	//teapot.SetPosition({ 0.0f, 0.0f, 1.0f });
+	//teapot.SetScale({ 0.01f, 0.01f, 0.01f });
+	//m_meshBoxes.push_back(teapot);
 
-	Mesh box = Mesh();
-	box.Create(&m_shaderDiffuse, "Assets/Models/box.obj");
-	box.SetCameraPosition(m_camera.GetPosition());
-	box.SetPosition({ 0.25f, 0.25f, 0.25f });
-	box.SetScale({ 0.1f, 0.1f, 0.1f });
-	//m_meshBoxes.push_back(box);
+	//Mesh box = Mesh();
+	//box.Create(&m_shaderDiffuse, "Assets/Models/box.obj");
+	//box.SetCameraPosition(m_camera.GetPosition());
+	//box.SetPosition({ 0.25f, 0.25f, 0.25f });
+	//box.SetScale({ 0.1f, 0.1f, 0.1f });
+	////m_meshBoxes.push_back(box);
 
-	Mesh wall = Mesh();
-	wall.Create(&m_shaderDiffuse, "Assets/Models/Wall.obj");
-	wall.SetCameraPosition(m_camera.GetPosition());
-	wall.SetPosition({ 0.0f, 0.0f, 1.0f });
-	wall.SetScale({ 0.05f, 0.05f, 0.05f });
-	m_meshBoxes.push_back(wall);
+	//Mesh wall = Mesh();
+	//wall.Create(&m_shaderDiffuse, "Assets/Models/Wall.obj");
+	//wall.SetCameraPosition(m_camera.GetPosition());
+	//wall.SetPosition({ 0.0f, 0.0f, 1.0f });
+	//wall.SetScale({ 0.05f, 0.05f, 0.05f });
+	//m_meshBoxes.push_back(wall);
+
+	Mesh fighter = Mesh();
+	fighter.Create(&m_shaderDiffuse, "Assets/Models/Fighter.obj");
+	fighter.SetCameraPosition(m_camera.GetPosition());
+	fighter.SetPosition({ 0.0f, 0.0f, 0.0f });
+	fighter.SetScale({ 0.001f, 0.001f, 0.001f });
+	m_meshBoxes.push_back(fighter);
 
 	/*SkyBox skybox = SkyBox();
 	skybox.Create(&m_shaderSkybox, "Assets/Models/Skybox.obj",
