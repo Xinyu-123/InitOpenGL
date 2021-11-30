@@ -23,11 +23,14 @@ void GameController::Initalize()
 	M_ASSERT((glewInit() == GLEW_OK), "Failed to initalize GLEW");
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST);
 
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	//glFrontFace(GL_CW);
+	
 	srand(time(0));
 
 	m_camera = Camera(WindowController::GetInstance().GetResolution());
@@ -47,20 +50,58 @@ void GameController::RunGame()
 	m_shaderFont = Shader();
 	m_shaderFont.LoadShaders("Font.vertexshader", "Font.fragmentshader");
 
+	m_shaderSkybox = Shader();
+	m_shaderSkybox.LoadShaders("SkyBox.vertexshader", "SkyBox.fragmentshader");
+
+#pragma region CreateMeshes
 	Mesh m = Mesh();
 	m.Create(&m_shaderColor, "Assets/Models/teapot.obj");
-	m.SetPosition({ 1.0f, 0.0f, 0.0f });
+	m.SetPosition({ 1.0f, 0.0f, 1.0f });
 	m.SetColor({ 1.0f, 1.0f, 1.0f });
 	m.SetScale({ 0.01f, 0.01f, 0.01f });
 	Mesh::Lights.push_back(m);
-	
-	Mesh teapot = Mesh();
-	teapot.Create(&m_shaderDiffuse, "Assets/Models/teapot.obj");
-	teapot.SetCameraPosition(m_camera.GetPosition());
-	teapot.SetPosition({ 0.0f, 0.0f, 0.0f });
-	teapot.SetScale({ 0.02f, 0.02f, 0.02f });
-	m_meshBoxes.push_back(teapot);
+	//
+	//Mesh teapot = Mesh();
+	//teapot.Create(&m_shaderDiffuse, "Assets/Models/teapot.obj");
+	//teapot.SetCameraPosition(m_camera.GetPosition());
+	//teapot.SetPosition({ 0.0f, 0.0f, 1.0f });
+	//teapot.SetScale({ 0.02f, 0.02f, 0.02f });
+	//m_meshBoxes.push_back(teapot);
 
+	Mesh box = Mesh();
+	box.Create(&m_shaderDiffuse, "Assets/Models/box.obj");
+	box.SetCameraPosition(m_camera.GetPosition());
+	box.SetPosition({ 1.0f, 0.0f, 5.0f });
+	box.SetScale({ 0.05f, 0.05f, 0.05f });
+	m_meshBoxes.push_back(box);
+
+	SkyBox skybox = SkyBox();
+	skybox.Create(&m_shaderSkybox, "Assets/Models/Skybox.obj",
+		{
+			"Assets/Textures/Skybox/right.jpg",
+			"Assets/Textures/Skybox/left.jpg",
+			"Assets/Textures/Skybox/top.jpg",
+			"Assets/Textures/Skybox/bottom.jpg",
+			"Assets/Textures/Skybox/front.jpg",
+			"Assets/Textures/Skybox/back.jpg",
+		});
+	//Mesh plane = Mesh();
+	//plane.Create(&m_shaderDiffuse, "Assets/Models/Plane.obj");
+	//plane.SetCameraPosition(m_camera.GetPosition());
+	//plane.SetPosition({ 0, 0, 0 });
+	//plane.SetScale({ 0.05f, 0.05f, 0.05f });
+	//m_meshBoxes.push_back(plane);
+	//
+	//Mesh window = Mesh();
+	//window.Create(&m_shaderDiffuse, "Assets/Models/Window.obj");
+	//window.SetCameraPosition(m_camera.GetPosition());
+	//window.SetPosition({ 0, 0, 1.0f });
+	//
+	//window.SetScale({ 0.05f, 0.05f, 0.05f });
+	//m_meshBoxes.push_back(window);
+
+
+#pragma endregion CreateMeshes
 	Fonts f = Fonts();
 	f.Create(&m_shaderFont, "arial.ttf", 500);
 
@@ -68,16 +109,11 @@ void GameController::RunGame()
 	do {
 		/*System::Windows::Forms::Application::DoEvents();*/
 
-		//GLint loc = glGetUniformLocation(m_shader.GetProgramID(), "RenderRedChannel");
-		//glUniform1i(loc, (int)InitOpenGL::ToolWindow::RenderRedChannel);
-
-		//loc = glGetUniformLocation(m_shader.GetProgramID(), "RenderGreenChannel");
-		//glUniform1i(loc, (int)InitOpenGL::ToolWindow::RenderGreenChannel);
-		//
-		//loc = glGetUniformLocation(m_shader.GetProgramID(), "RenderBlueChannel");
-		//glUniform1i(loc, (int)InitOpenGL::ToolWindow::RenderBlueChannel);
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		m_camera.Rotate();
+		glm::mat4 view = glm::mat4(glm::mat3(m_camera.GetView()));
+		skybox.Render(m_camera.GetProjection() * view);
+
 		for (size_t i = 0; i < m_meshBoxes.size(); ++i)
 		{
 			m_meshBoxes[i].Render(m_camera.GetProjection() * m_camera.GetView());
@@ -106,6 +142,8 @@ void GameController::RunGame()
 	{
 		Mesh::Lights[i].Cleanup();
 	}
+	m_skybox.Cleanup();
 	m_shaderColor.Cleanup();
 	m_shaderDiffuse.Cleanup();
+	m_shaderSkybox.Cleanup();
 }

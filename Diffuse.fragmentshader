@@ -38,7 +38,12 @@ uniform Light light[NR_LIGHTS];
 
 void main()
 {
-	vec4 finalColor = vec4(0);
+	// Early out if we have no color at this fragment position
+	vec4 diffColor = texture(material.diffuseTexture, retTexCoord);
+	if(diffColor.a == 0)
+		discard;
+
+	vec3 finalColor = vec3(0);
 	for(int i = 0; i < NR_LIGHTS; ++i)
 	{
 
@@ -50,11 +55,11 @@ void main()
 		vec3 refl = reflect(-lightDir, retNormal);
 		float specularStrength = pow(max(dot(refl, retViewDirection), 0.0f), material.specularStrength);
 
-		vec3 ambient = light[i].ambientColor * texture(material.diffuseTexture, retTexCoord).rgb / NR_LIGHTS;
-		vec3 lambertian = light[i].diffuseColor * lambertianStrength * texture(material.diffuseTexture, retTexCoord).rbg;
+		vec3 ambient = light[i].ambientColor * diffColor.rgb / NR_LIGHTS;
+		vec3 lambertian = light[i].diffuseColor * lambertianStrength * diffColor.rbg;
 		vec3 specular = light[i].specularColor * specularStrength * texture(material.specularTexture, retTexCoord).rbg;
 
-		finalColor += vec4((ambient + lambertian + specular) * light[i].color, 1.0f);
+		finalColor += (ambient + lambertian + specular) * light[i].color;
 	}
-	FragColor = finalColor;
+	FragColor = vec4(finalColor, diffColor.a);
 }

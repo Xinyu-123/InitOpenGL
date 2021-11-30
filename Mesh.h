@@ -31,6 +31,8 @@ public:
 	
 	// Members
 	static vector<Mesh> Lights;
+	glm::vec3 m_rotation;
+
 private:
 	// Methods
 	void SetShaderVariables(glm::mat4 _pv);
@@ -47,7 +49,6 @@ private:
 
 	// Transform
 	glm::vec3 m_position;
-	glm::vec3 m_rotation;
 	glm::vec3 m_scale;
 	glm::mat4 m_world;
 

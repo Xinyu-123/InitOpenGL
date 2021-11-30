@@ -85,7 +85,7 @@ void Mesh::Cleanup(){
 void Mesh::Render(glm::mat4 _vp){
 	glUseProgram(m_shader->GetProgramID());
 
-	m_rotation.y += 0.001f;
+	m_rotation.x += 0.001f;
 
 	CalculateTransform();
 	SetShaderVariables(_vp);
@@ -102,7 +102,7 @@ void Mesh::Render(glm::mat4 _vp){
 void Mesh::CalculateTransform()
 {
 	m_world = glm::translate(glm::mat4(1.0f), m_position);
-	m_world = glm::rotate(m_world, m_rotation.y, glm::vec3(0, 1, 0));
+	m_world = glm::rotate(m_world, m_rotation.x, glm::vec3(1, 0, 0));
 	m_world = glm::scale(m_world, m_scale);
 }
 

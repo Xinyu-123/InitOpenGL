@@ -16,6 +16,7 @@ public:
 
 	// methods
 	void LoadTexture(string _filename);
+	void LoadCubeMap(vector<std::string> _faces);
 	void Cleanup();
 private:
 	// Members
@@ -24,6 +25,9 @@ private:
 	int m_channels;
 	GLuint m_texture;
 	GLuint m_texture2;
+
+	// Method
+	bool EndsWith(const std::string& _str, const std::string& _suffix);
 };
 
 #endif
