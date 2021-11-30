@@ -40,8 +40,9 @@ private:
 	string Concat(string _s1, int _index, string _s2);
 private:
 	Shader* m_shader;
-	Texture m_texture;
-	Texture m_texture2;
+	Texture m_textureDiffuse;
+	Texture m_textureSpecular;
+	Texture m_textureNormal;
 	GLuint m_vertexBuffer; // GPU Buffer
 	GLuint m_indexBuffer; // GPU Buffer
 	vector<GLfloat> m_vertexData;
