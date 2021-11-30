@@ -28,6 +28,7 @@ public:
 	void Cleanup();
 	void Render(glm::mat4 _vp);
 	void CalculateTransform();
+	string RemoveFolder(string _map);
 	
 	// Members
 	static vector<Mesh> Lights;
@@ -47,7 +48,7 @@ private:
 	GLuint m_indexBuffer; // GPU Buffer
 	vector<GLfloat> m_vertexData;
 	vector<GLubyte> m_indexData;
-
+	bool m_enableNormalMap;
 	// Transform
 	glm::vec3 m_position;
 	glm::vec3 m_scale;

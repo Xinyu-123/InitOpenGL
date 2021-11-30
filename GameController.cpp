@@ -56,26 +56,33 @@ void GameController::RunGame()
 #pragma region CreateMeshes
 	Mesh m = Mesh();
 	m.Create(&m_shaderColor, "Assets/Models/teapot.obj");
-	m.SetPosition({ 1.0f, 0.0f, 1.0f });
+	m.SetPosition({ 0.5f, 0.0f, 2.0f });
 	m.SetColor({ 1.0f, 1.0f, 1.0f });
 	m.SetScale({ 0.01f, 0.01f, 0.01f });
 	Mesh::Lights.push_back(m);
-	//
-	//Mesh teapot = Mesh();
-	//teapot.Create(&m_shaderDiffuse, "Assets/Models/teapot.obj");
-	//teapot.SetCameraPosition(m_camera.GetPosition());
-	//teapot.SetPosition({ 0.0f, 0.0f, 1.0f });
-	//teapot.SetScale({ 0.02f, 0.02f, 0.02f });
-	//m_meshBoxes.push_back(teapot);
+	
+	Mesh teapot = Mesh();
+	teapot.Create(&m_shaderDiffuse, "Assets/Models/teapot.obj");
+	teapot.SetCameraPosition(m_camera.GetPosition());
+	teapot.SetPosition({ 0.0f, 0.0f, 1.0f });
+	teapot.SetScale({ 0.01f, 0.01f, 0.01f });
+	m_meshBoxes.push_back(teapot);
 
 	Mesh box = Mesh();
 	box.Create(&m_shaderDiffuse, "Assets/Models/box.obj");
 	box.SetCameraPosition(m_camera.GetPosition());
-	box.SetPosition({ 1.0f, 0.0f, 5.0f });
-	box.SetScale({ 0.05f, 0.05f, 0.05f });
-	m_meshBoxes.push_back(box);
+	box.SetPosition({ 0.25f, 0.25f, 0.25f });
+	box.SetScale({ 0.1f, 0.1f, 0.1f });
+	//m_meshBoxes.push_back(box);
 
-	SkyBox skybox = SkyBox();
+	Mesh wall = Mesh();
+	wall.Create(&m_shaderDiffuse, "Assets/Models/Wall.obj");
+	wall.SetCameraPosition(m_camera.GetPosition());
+	wall.SetPosition({ 0.0f, 0.0f, 1.0f });
+	wall.SetScale({ 0.05f, 0.05f, 0.05f });
+	m_meshBoxes.push_back(wall);
+
+	/*SkyBox skybox = SkyBox();
 	skybox.Create(&m_shaderSkybox, "Assets/Models/Skybox.obj",
 		{
 			"Assets/Textures/Skybox/right.jpg",
@@ -84,7 +91,7 @@ void GameController::RunGame()
 			"Assets/Textures/Skybox/bottom.jpg",
 			"Assets/Textures/Skybox/front.jpg",
 			"Assets/Textures/Skybox/back.jpg",
-		});
+		});*/
 	//Mesh plane = Mesh();
 	//plane.Create(&m_shaderDiffuse, "Assets/Models/Plane.obj");
 	//plane.SetCameraPosition(m_camera.GetPosition());
@@ -110,9 +117,9 @@ void GameController::RunGame()
 		/*System::Windows::Forms::Application::DoEvents();*/
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		m_camera.Rotate();
-		glm::mat4 view = glm::mat4(glm::mat3(m_camera.GetView()));
-		skybox.Render(m_camera.GetProjection() * view);
+		//m_camera.Rotate();
+		//glm::mat4 view = glm::mat4(glm::mat3(m_camera.GetView()));
+		//skybox.Render(m_camera.GetProjection() * view);
 
 		for (size_t i = 0; i < m_meshBoxes.size(); ++i)
 		{
@@ -142,7 +149,7 @@ void GameController::RunGame()
 	{
 		Mesh::Lights[i].Cleanup();
 	}
-	m_skybox.Cleanup();
+	//m_skybox.Cleanup();
 	m_shaderColor.Cleanup();
 	m_shaderDiffuse.Cleanup();
 	m_shaderSkybox.Cleanup();

@@ -6,8 +6,9 @@ vector<Mesh> Mesh::Lights;
 
 Mesh::Mesh() {
 	m_shader = nullptr;
-	m_texture = {};
-	m_texture2 = {};
+	m_textureDiffuse = {};
+	m_textureSpecular = {};
+	m_textureNormal = {};
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
 	m_world = glm::mat4(1.0f);
@@ -18,6 +19,8 @@ Mesh::Mesh() {
 	m_lightPosition = { 0, 0, 0 };
 	m_lightColor = { 1, 1, 1 };
 	m_cameraPosition = { 0, 0, 0 };
+	m_enableNormalMap = false;
+
 }
 
 Mesh:: ~Mesh() {
@@ -58,10 +61,19 @@ void Mesh::Create(Shader* _shader, string _file){
 		diffuseMap.erase(0, last_slash_idx);
 	}
 
-	m_texture = Texture();
-	m_texture.LoadTexture("Assets/Textures/" + diffuseMap);
-	m_texture2 = Texture();
-	m_texture2.LoadTexture("Assets/Textures/" + diffuseMap);
+	m_textureDiffuse = Texture();
+	m_textureDiffuse.LoadTexture("Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_Kd));
+	m_textureSpecular = Texture();
+
+	if(loader.LoadedMaterials[0].map_Ks != "")
+		m_textureSpecular.LoadTexture("Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_Ks));
+	
+	if (loader.LoadedMaterials[0].map_bump != "")
+	{
+		m_textureNormal.LoadTexture("Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_bump));
+		m_enableNormalMap = true;
+	}
+
 	
 
 	glGenBuffers(1, &m_vertexBuffer);
@@ -78,14 +90,14 @@ void Mesh::Create(Shader* _shader, string _file){
 void Mesh::Cleanup(){
 	glDeleteBuffers(1, &m_indexBuffer);
 	glDeleteBuffers(1, &m_vertexBuffer);
-	m_texture.Cleanup();
-	m_texture2.Cleanup();
+	m_textureDiffuse.Cleanup();
+	m_textureSpecular.Cleanup();
 }
 
 void Mesh::Render(glm::mat4 _vp){
 	glUseProgram(m_shader->GetProgramID());
 
-	m_rotation.x += 0.001f;
+	m_rotation.y += 0.001f;
 
 	CalculateTransform();
 	SetShaderVariables(_vp);
@@ -102,8 +114,19 @@ void Mesh::Render(glm::mat4 _vp){
 void Mesh::CalculateTransform()
 {
 	m_world = glm::translate(glm::mat4(1.0f), m_position);
-	m_world = glm::rotate(m_world, m_rotation.x, glm::vec3(1, 0, 0));
+	m_world = glm::rotate(m_world, m_rotation.y, glm::vec3(0, 1, 0));
 	m_world = glm::scale(m_world, m_scale);
+}
+
+string Mesh::RemoveFolder(string _map)
+{
+	const size_t last_slash_idx = _map.find_last_of("\\/");
+	if (std::string::npos != last_slash_idx)
+	{
+		_map.erase(0, last_slash_idx + 1);
+	}
+
+	return _map;
 }
 
 void Mesh::SetShaderVariables(glm::mat4 _pv)
@@ -111,7 +134,7 @@ void Mesh::SetShaderVariables(glm::mat4 _pv)
 	m_shader->SetMat4("World", m_world);
 	m_shader->SetMat4("WVP", _pv * m_world);
 	m_shader->SetVec3("CameraPosition", m_cameraPosition);
-
+	m_shader->SetInt("EnableNormalMap", m_enableNormalMap);
 
 
 	// Configure Light
@@ -134,8 +157,9 @@ void Mesh::SetShaderVariables(glm::mat4 _pv)
 
 		// Configure Material
 		m_shader->SetFloat("material.specularStrength", 4);
-		m_shader->SetTextureSampler("material.diffuseTexture", GL_TEXTURE0, 0, m_texture.GetTexture());
-		m_shader->SetTextureSampler("material.specularTexture", GL_TEXTURE1, 1, m_texture2.GetTexture());
+		m_shader->SetTextureSampler("material.diffuseTexture", GL_TEXTURE0, 0, m_textureDiffuse.GetTexture());
+		m_shader->SetTextureSampler("material.specularTexture", GL_TEXTURE1, 1, m_textureSpecular.GetTexture());
+		m_shader->SetTextureSampler("material.normalTexture", GL_TEXTURE2, 2, m_textureNormal.GetTexture());
 	}
 }
 
