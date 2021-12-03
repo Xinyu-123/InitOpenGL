@@ -33,6 +33,9 @@ void GameController::Initalize()
 	
 	srand(time(0));
 
+	glGenVertexArrays(1, &m_vao);
+	glBindVertexArray(m_vao);
+
 	m_camera = Camera(WindowController::GetInstance().GetResolution());
 
 }
@@ -82,12 +85,19 @@ void GameController::RunGame()
 	//wall.SetScale({ 0.05f, 0.05f, 0.05f });
 	//m_meshBoxes.push_back(wall);
 
-	Mesh fighter = Mesh();
-	fighter.Create(&m_shaderDiffuse, "Assets/Models/Fighter.obj");
-	fighter.SetCameraPosition(m_camera.GetPosition());
-	fighter.SetPosition({ 0.0f, 0.0f, 0.0f });
-	fighter.SetScale({ 0.001f, 0.001f, 0.001f });
-	m_meshBoxes.push_back(fighter);
+	//Mesh box = Mesh();
+	//box.Create(&m_shaderDiffuse, "Assets/Models/Box.obj", 1);
+	//box.SetCameraPosition(m_camera.GetPosition());
+	//box.SetPosition({ 0.0f, 0.0f, 0.0f });
+	//box.SetScale({ 0.05f, 0.05f, 0.05f });
+	//m_meshBoxes.push_back(box);
+
+	Mesh bs = Mesh();
+	bs.Create(&m_shaderDiffuse, "Assets/Models/Box.obj", 2);
+	bs.SetCameraPosition(m_camera.GetPosition());
+	bs.SetPosition({ 0.0f, 0.0f, 0.0f });
+	bs.SetScale({ 0.05f, 0.05f, 0.05f });
+	m_meshBoxes.push_back(bs);
 
 	/*SkyBox skybox = SkyBox();
 	skybox.Create(&m_shaderSkybox, "Assets/Models/Skybox.obj",
@@ -117,13 +127,26 @@ void GameController::RunGame()
 
 #pragma endregion CreateMeshes
 	Fonts f = Fonts();
-	f.Create(&m_shaderFont, "arial.ttf", 500);
+	f.Create(&m_shaderFont, "arial.ttf", 100);
+	double lastTime = glfwGetTime();
+	int fps = 0;
+	string fpsS = "0";
 
 	GLFWwindow* win = WindowController::GetInstance().GetWindow();
 	do {
 		/*System::Windows::Forms::Application::DoEvents();*/
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		double currentTime = glfwGetTime();
+		fps++;
+		if (currentTime - lastTime >= 1.0)
+		{
+			fpsS = "FPS: " + to_string(fps);
+			fps = 0;
+			lastTime += 1.0f;
+		}
+		f.RenderText(fpsS, 100, 100, 0.5f, { 1.0f, 1.0f, 1.0f });
 		//m_camera.Rotate();
 		//glm::mat4 view = glm::mat4(glm::mat3(m_camera.GetView()));
 		//skybox.Render(m_camera.GetProjection() * view);

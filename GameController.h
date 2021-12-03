@@ -30,6 +30,7 @@ private:
 	Shader m_shaderFont;
 
 	SkyBox m_skybox;
+	GLuint m_vao;
 
 };
 

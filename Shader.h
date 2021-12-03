@@ -17,7 +17,7 @@ public:
 	GLuint GetAttrTangents() { return m_attrTangents;  }
 	GLuint GetAttrBitangents() { return m_attrBitangents;  }
 	GLuint GetAttrTexCoords() { return m_attrTexCoords;  }
-
+	GLuint GetAttrInstanceMatrix() { return m_attrInstanceMatrix; }
 	// Methods
 	void LoadShaders(const char* _vertexFilePath, const char* _fragmentFilePath);
 	void Cleanup();
@@ -38,12 +38,12 @@ private:
 	GLuint m_programID;
 	GLuint m_attrVertices;
 	GLuint m_attrWVP;
-	GLuint m_attrPOL;
 	GLuint m_attrColors;
 	GLuint m_attrNormals;
 	GLuint m_attrTangents;
 	GLuint m_attrBitangents;
 	GLuint m_attrTexCoords;
+	GLuint m_attrInstanceMatrix;
 	GLint m_result = GL_FALSE;
 	int m_infoLength;
 };

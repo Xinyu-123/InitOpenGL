@@ -126,6 +126,7 @@ void Shader::LoadAttributes()
 	m_attrTangents = glGetAttribLocation(m_programID, "tangents");
 	m_attrBitangents = glGetAttribLocation(m_programID, "bitangents");
 	m_attrTexCoords = glGetAttribLocation(m_programID, "texCoords");
+	m_attrInstanceMatrix = glGetAttribLocation(m_programID, "instanceMatrix");
 	m_attrWVP = glGetUniformLocation(m_programID, "WVP");
 
 }

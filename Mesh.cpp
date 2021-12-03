@@ -20,7 +20,9 @@ Mesh::Mesh() {
 	m_lightColor = { 1, 1, 1 };
 	m_cameraPosition = { 0, 0, 0 };
 	m_enableNormalMap = false;
-
+	m_instanceCount = 1;
+	m_enableInstancing = false;
+	m_elementSize = 0;
 }
 
 Mesh:: ~Mesh() {
@@ -28,9 +30,12 @@ Mesh:: ~Mesh() {
 }
 
 // Methods
-void Mesh::Create(Shader* _shader, string _file){
+void Mesh::Create(Shader* _shader, string _file, int _instanceCount)
+{
 	m_shader = _shader;
-
+	m_instanceCount = _instanceCount;
+	if (m_instanceCount > 1)
+		m_enableInstancing = true;
 
 	objl::Loader loader;
 	M_ASSERT(loader.LoadFile(_file) == true, "Failed to load mesh.");
@@ -112,7 +117,32 @@ void Mesh::Create(Shader* _shader, string _file){
 	glGenBuffers(1, &m_indexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indexData.size() * sizeof(GLubyte), m_indexData.data(), GL_STATIC_DRAW);
+
+	if (m_enableInstancing)
+	{
+		glGenBuffers(1, &m_instanceBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, m_instanceBuffer);
+
+		srand(glfwGetTime());
+		for (unsigned int i = 0; i < m_instanceCount; ++i)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(-20 + rand() % 40, -10 + rand() % 20, -10 + rand() % 20));
+
+			for (int x = 0; x < 4; ++x)
+			{
+				for (int y = 0; y < 4; ++y)
+				{
+					m_instanceData.push_back(model[x][y]);
+				}
+			}
+		}
+
+		glBufferData(GL_ARRAY_BUFFER, m_instanceCount * sizeof(glm::mat4), m_instanceData.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 }
+
 
 void Mesh::Cleanup(){
 	glDeleteBuffers(1, &m_indexBuffer);
@@ -124,19 +154,40 @@ void Mesh::Cleanup(){
 void Mesh::Render(glm::mat4 _vp){
 	glUseProgram(m_shader->GetProgramID());
 
-	m_rotation.x += 0.01f;
+	m_rotation.x += 0.0005f;
 
 	CalculateTransform();
 	SetShaderVariables(_vp);
 	BindAttributes();
 
 
-	//glDrawElements(GL_TRIANGLES, m_indexData.size(), GL_UNSIGNED_BYTE, (void*)0);
+	if (m_enableInstancing)
+	{
+		glDrawArraysInstanced(GL_TRIANGLES, 0, m_vertexData.size() / m_elementSize, m_instanceCount);
+	}
+	else
+	{
+		//glDrawElements(GL_TRIANGLES, m_indexData.size(), GL_UNSIGNED_BYTE, (void*)0);
+		glDrawArrays(GL_TRIANGLES, 0, m_vertexData.size() / m_elementSize);
+	}
 
-	glDrawArrays(GL_TRIANGLES, 0, m_vertexData.size() / elementSize);
 	glDisableVertexAttribArray(m_shader->GetAttrNormals());
 	glDisableVertexAttribArray(m_shader->GetAttrVertices());
 	glDisableVertexAttribArray(m_shader->GetAttrTexCoords());
+
+	if (m_enableNormalMap)
+	{
+		glDisableVertexAttribArray(m_shader->GetAttrTangents());
+		glDisableVertexAttribArray(m_shader->GetAttrBitangents());
+	}
+
+	if (m_enableInstancing)
+	{
+		glDisableVertexAttribArray(m_shader->GetAttrInstanceMatrix());
+		glDisableVertexAttribArray(m_shader->GetAttrInstanceMatrix() + 1);
+		glDisableVertexAttribArray(m_shader->GetAttrInstanceMatrix() + 2);
+		glDisableVertexAttribArray(m_shader->GetAttrInstanceMatrix() + 3);
+	}
 }
 
 void Mesh::CalculateTransform()
@@ -163,7 +214,7 @@ void Mesh::SetShaderVariables(glm::mat4 _pv)
 	m_shader->SetMat4("WVP", _pv * m_world);
 	m_shader->SetVec3("CameraPosition", m_cameraPosition);
 	m_shader->SetInt("EnableNormalMap", m_enableNormalMap);
-
+	m_shader->SetInt("EnableInstancing", m_enableInstancing);
 
 	// Configure Light
 	for (size_t i = 0; i < Lights.size(); ++i)
@@ -197,11 +248,11 @@ void Mesh::BindAttributes()
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
 
 	int stride = 8;
-	elementSize = 8;
+	m_elementSize = 8;
 	if (m_enableNormalMap)
 	{
 		stride += 6;
-		elementSize += 6;
+		m_elementSize += 6;
 	}
 	
 	// 1st attribute : vertices
@@ -262,6 +313,60 @@ void Mesh::BindAttributes()
 		);
 
 	}
+	
+
+#pragma region BindInstancingData
+	if (m_enableInstancing)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_instanceBuffer); // bind the instance buffer
+
+		// Set attribute pointers for instance matrix (4 times vec4)
+		glEnableVertexAttribArray(m_shader->GetAttrInstanceMatrix());
+		glVertexAttribPointer(
+			m_shader->GetAttrInstanceMatrix(),
+			4,
+			GL_FLOAT,
+			GL_FALSE,
+			sizeof(glm::mat4),
+			(void*)0
+			);		
+		
+		glEnableVertexAttribArray(m_shader->GetAttrInstanceMatrix() + 1);
+		glVertexAttribPointer(
+			m_shader->GetAttrInstanceMatrix() + 1,
+			4,
+			GL_FLOAT,
+			GL_FALSE,
+			sizeof(glm::mat4),
+			(void*)sizeof(glm::mat4)
+			);		
+		
+		glEnableVertexAttribArray(m_shader->GetAttrInstanceMatrix() + 2);
+		glVertexAttribPointer(
+			m_shader->GetAttrInstanceMatrix() + 2,
+			4,
+			GL_FLOAT,
+			GL_FALSE,
+			sizeof(glm::mat4),
+			(void*)(2 * sizeof(glm::mat4))
+			);		
+		
+		glEnableVertexAttribArray(m_shader->GetAttrInstanceMatrix() + 3);
+		glVertexAttribPointer(
+			m_shader->GetAttrInstanceMatrix() + 3,
+			4,
+			GL_FLOAT,
+			GL_FALSE,
+			sizeof(glm::mat4),
+			(void*)(3 * sizeof(glm::mat4))
+			);
+
+		glVertexAttribDivisor(m_shader->GetAttrInstanceMatrix(), 1);
+		glVertexAttribDivisor(m_shader->GetAttrInstanceMatrix() + 1, 1);
+		glVertexAttribDivisor(m_shader->GetAttrInstanceMatrix() + 2, 1);
+		glVertexAttribDivisor(m_shader->GetAttrInstanceMatrix() + 3, 1);
+	}
+#pragma endregion BindInstancingData
 }
 
 string Mesh::Concat(string _s1, int _index, string _s2)

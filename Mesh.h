@@ -25,7 +25,7 @@ public:
 	glm::vec3 GetColor() { return m_color; }
 	void SetCameraPosition(glm::vec3 _cameraPosition) { m_cameraPosition = _cameraPosition; }
 	// Methods
-	void Create(Shader* _shader, string _file);
+	void Create(Shader* _shader, string _file, int _instanceCount = 1);
 	void Cleanup();
 	void Render(glm::mat4 _vp);
 	void CalculateTransform();
@@ -49,10 +49,16 @@ private:
 	Texture m_textureNormal;
 	GLuint m_vertexBuffer; // GPU Buffer
 	GLuint m_indexBuffer; // GPU Buffer
+	GLuint m_instanceBuffer; // GPU Buffer
 	vector<GLfloat> m_vertexData;
 	vector<GLubyte> m_indexData;
+	vector<GLfloat> m_instanceData;
 	bool m_enableNormalMap;
-	int elementSize;
+	int m_instanceCount;
+	bool m_enableInstancing;
+	int m_elementSize;
+
+
 	// Transform
 	glm::vec3 m_position;
 	glm::vec3 m_scale;
